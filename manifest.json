@@ -1,0 +1,28 @@
+{
+  "content_scripts"          : [
+    {
+      "all_frames" : true,
+      "js"         : [
+        "dist/jquery.js",
+        "dist/d3.js",
+        "dist/index.js"
+      ],
+      "matches"    : [
+        "*://paper.dropbox.com/*"
+      ],
+      "run_at"     : "document_start"
+    }
+  ],
+  "description"              : "Dropbox Paper Buildup",
+  "manifest_version"         : 2,
+  "name"                     : "Dropbox Paper Buildup",
+  "permissions"              : [
+    "tabs",
+    "https://paper.dropbox.com/"
+  ],
+  "update_url"               : "https://clients2.google.com/service/update2/crx",
+  "version"                  : "0.1.1",
+  "web_accessible_resources" : [
+    "dist/index.css"
+  ]
+}

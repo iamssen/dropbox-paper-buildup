@@ -1,0 +1,18 @@
+{
+  "name"            : "dropbox-paper-buildup",
+  "license"         : "MIT",
+  "repository"      : {
+    "type" : "git",
+    "url"  : "git://github.com/iamssen/dropbox-paper-buildup.git"
+  },
+  "scripts"         : {
+    "build"   : "gulp build",
+    "release" : "gulp build && gulp release"
+  },
+  "devDependencies" : {
+    "gulp"       : "*",
+    "gulp-clean" : "*",
+    "gulp-sass"  : "*",
+    "gulp-tsc"   : "*"
+  }
+}

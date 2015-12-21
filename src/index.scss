@@ -1,0 +1,118 @@
+.buildup-container {
+	box-sizing: border-box;
+	margin: 0 40px 24px 40px;
+
+	h4.buildup-container-header {
+		font-size: 14px;
+		font-weight: 400;
+		margin-bottom: 15px;
+	}
+
+	ul.buildup-container-folders {
+		li.buildup-container-folder {
+			margin-bottom: 10px;
+
+			h5 {
+				font-size: 13px;
+				font-weight: 400;
+				margin-bottom: 6px;
+
+				a {
+					color: #000000;
+					&:hover {
+						color: #0070cc;
+					}
+				}
+			}
+
+			ul.buildup-container-docs {
+				li.buildup-container-doc {
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					font-weight: 300;
+					font-size: 12px;
+					margin-bottom: 4px;
+
+					a {
+						color: #7b8994;
+						&:hover {
+							color: #0070cc;
+						}
+
+						span.buildup-container-doc-favorited {
+						}
+
+						span.buildup-container-doc-unfavorited {
+							opacity: 0.3;
+						}
+					}
+				}
+
+				li.buildup-container-doc-selected {
+					font-weight: 600;
+
+					a {
+						color: #363daf;
+					}
+				}
+			}
+		}
+
+	}
+}
+
+.hp-doclist-entry-activity-info {
+	display: none;
+}
+
+.hp-doclist-entry-byline {
+	display: inline;
+}
+
+.hp-doclist-entry-byline-private {
+	display: none;
+}
+
+.hp-doclist-entry-sharing-status-separator {
+	display: none;
+}
+
+.hp-doclist-entry-snippet {
+	display: none;
+}
+
+.hp-list-item-content {
+	margin-left: 1px;
+}
+
+.hp-list-item-icon {
+	display: none;
+}
+
+.hp-list-item-star {
+	top: 0;
+}
+
+.hp-list-item-subtitle {
+	display: inline;
+	padding-left: 10px;
+}
+
+.hp-list-item-title {
+	display: inline;
+}
+
+.hp-meeting-note-entry {
+	display: none;
+}
+
+a.hp-list-item {
+	padding-bottom: 2px;
+	padding-top: 2px;
+}
+
+s {
+	color: #bbbbbb;
+}
+
