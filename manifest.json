@@ -18,10 +18,11 @@
   "name"                     : "Dropbox Paper Buildup",
   "permissions"              : [
     "tabs",
-    "https://paper.dropbox.com/"
+    "storage",
+    "*://paper.dropbox.com/"
   ],
   "update_url"               : "https://clients2.google.com/service/update2/crx",
-  "version"                  : "0.1.1",
+  "version"                  : "0.2.0",
   "web_accessible_resources" : [
     "dist/index.css"
   ]

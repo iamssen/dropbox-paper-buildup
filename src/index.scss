@@ -1,11 +1,73 @@
+//---------------------------------------------
+// Side-bar menu styles
+//---------------------------------------------
 .buildup-container {
 	box-sizing: border-box;
 	margin: 0 40px 24px 40px;
 
 	h4.buildup-container-header {
-		font-size: 14px;
+		font-size: 15px;
 		font-weight: 400;
-		margin-bottom: 15px;
+		margin-top: 16px;
+		margin-bottom: 11px;
+		cursor: pointer;
+
+		&:first-child {
+			margin-top: 0;
+		}
+
+		span.buildup-container-header-disclosure-sign {
+			color: #999999;
+		}
+	}
+
+	.buildup-container-disclosure-closed {
+		display: none;
+	}
+
+	ul.buildup-container-docs {
+		li.buildup-container-doc {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			font-weight: 300;
+			font-size: 12px;
+			margin-bottom: 4px;
+
+			a {
+				color: #7b8994;
+				&:hover {
+					color: #0070cc;
+				}
+
+				span.buildup-container-doc-favorited {
+				}
+
+				span.buildup-container-doc-unfavorited {
+					opacity: 0.16;
+				}
+			}
+		}
+
+		li.buildup-container-doc-important {
+			font-weight: 500;
+
+			a {
+				color: #1425a5;
+			}
+		}
+
+		li.buildup-container-doc-unimportant {
+			opacity: 0.3;
+		}
+
+		li.buildup-container-doc-selected {
+			font-weight: 600;
+
+			a {
+				color: #363daf;
+			}
+		}
 	}
 
 	ul.buildup-container-folders {
@@ -18,50 +80,33 @@
 				margin-bottom: 6px;
 
 				a {
-					color: #000000;
+					color: #68747d;
 					&:hover {
 						color: #0070cc;
 					}
 				}
 			}
+		}
 
-			ul.buildup-container-docs {
-				li.buildup-container-doc {
-					overflow: hidden;
-					text-overflow: ellipsis;
-					white-space: nowrap;
-					font-weight: 300;
-					font-size: 12px;
-					margin-bottom: 4px;
-
-					a {
-						color: #7b8994;
-						&:hover {
-							color: #0070cc;
-						}
-
-						span.buildup-container-doc-favorited {
-						}
-
-						span.buildup-container-doc-unfavorited {
-							opacity: 0.3;
-						}
-					}
-				}
-
-				li.buildup-container-doc-selected {
-					font-weight: 600;
-
-					a {
-						color: #363daf;
-					}
+		li.buildup-container-folder-important {
+			h5 {
+				a {
+					color: #1425a5;
 				}
 			}
 		}
 
+		li.buildup-container-folder-unimportant {
+			h5 {
+				opacity: 0.3;
+			}
+		}
 	}
 }
 
+//---------------------------------------------
+// Tiny UI
+//---------------------------------------------
 .hp-doclist-entry-activity-info {
 	display: none;
 }
@@ -116,3 +161,41 @@ s {
 	color: #bbbbbb;
 }
 
+//---------------------------------------------
+// TODO Right-click move to folder
+//---------------------------------------------
+//@keyframes to-right {
+//	from {
+//		opacity: 0;
+//		visibility: hidden;
+//		transform: translateX(0px);
+//	}
+//	to {
+//		opacity: 1;
+//		visibility: visible;
+//		transform: translateX(10px);
+//	}
+//}
+//
+//div.buildup-move2folder {
+//	font-size: 13px;
+//	background-color: rgba(255, 255, 255, 0.8);
+//	border-radius: 3px;
+//	border: 1px solid #000000;
+//	padding: 10px;
+//
+//	position: absolute;
+//	z-index: 9999;
+//
+//	box-sizing: border-box;
+//
+//	animation-duration: 0.4s;
+//	animation-fill-mode: forwards;
+//	animation-timing-function: ease;
+//	animation-name: to-right;
+//
+//	a.buildup-move2folder-folder {
+//		display: block;
+//		cursor: pointer;
+//	}
+//}
