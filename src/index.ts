@@ -50,6 +50,8 @@ interface Item {
 // Render
 //----------------------------------------------------------------
 function drawSidemenu(sections:Section[]) {
+	sections = sections.filter((section:Section) => section.items && section.items.length > 0);
+
 	const hierarchy = d3.layout.hierarchy();
 
 	d3.select('.buildup-sidemenu').remove();
@@ -130,7 +132,7 @@ function drawSidemenu(sections:Section[]) {
 		.endAngle(d => Math.PI * 2 * d['progress'])
 
 	const svg = li
-		.filter((item:Item) => !isNaN(item.progress))
+		.filter((item:Item) => item.progress && !isNaN(item.progress))
 		.append('svg')
 		.attr({width: 10, height: 10})
 		.append('g')
@@ -347,7 +349,7 @@ function getSectionData(result:(sections:Section[]) => void) {
 				type: Type.FOLDER,
 				isFavorite: false,
 				isUnimportant: false,
-				progress: -1,
+				progress: NaN,
 				isCurrent: false,
 				gtd: GTD2.NONE,
 				children: items.uncategorized
@@ -356,7 +358,7 @@ function getSectionData(result:(sections:Section[]) => void) {
 			result([
 				{title: 'Inbox', items: items.inbox, disclosure: true},
 				{title: 'Snoozed', items: items.snoozed, disclosure: false},
-				{title: 'Favorited', items: items.favorited, disclosure: false},
+				{title: 'Favorites', items: items.favorited, disclosure: false},
 				{title: 'Folders', items: items.folders, disclosure: false},
 				{title: 'Documents', items: items.documents, disclosure: true},
 				{title: 'Unimportants', items: items.unimportants, disclosure: false}

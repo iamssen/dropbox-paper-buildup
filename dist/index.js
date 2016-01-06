@@ -4,6 +4,7 @@ var Type;
     Type[Type["DOCUMENT"] = 1] = "DOCUMENT";
 })(Type || (Type = {}));
 function drawSidemenu(sections) {
+    sections = sections.filter(function (section) { return section.items && section.items.length > 0; });
     var hierarchy = d3.layout.hierarchy();
     d3.select('.buildup-sidemenu').remove();
     var container = d3.select('.hp-sidebar-scroller')
@@ -74,7 +75,7 @@ function drawSidemenu(sections) {
         .startAngle(0)
         .endAngle(function (d) { return Math.PI * 2 * d['progress']; });
     var svg = li
-        .filter(function (item) { return !isNaN(item.progress); })
+        .filter(function (item) { return item.progress && !isNaN(item.progress); })
         .append('svg')
         .attr({ width: 10, height: 10 })
         .append('g')
@@ -264,7 +265,7 @@ function getSectionData(result) {
                 type: Type.FOLDER,
                 isFavorite: false,
                 isUnimportant: false,
-                progress: -1,
+                progress: NaN,
                 isCurrent: false,
                 gtd: GTD2.NONE,
                 children: items.uncategorized
@@ -272,7 +273,7 @@ function getSectionData(result) {
             result([
                 { title: 'Inbox', items: items.inbox, disclosure: true },
                 { title: 'Snoozed', items: items.snoozed, disclosure: false },
-                { title: 'Favorited', items: items.favorited, disclosure: false },
+                { title: 'Favorites', items: items.favorited, disclosure: false },
                 { title: 'Folders', items: items.folders, disclosure: false },
                 { title: 'Documents', items: items.documents, disclosure: true },
                 { title: 'Unimportants', items: items.unimportants, disclosure: false }
