@@ -1,58 +1,57 @@
 /// <reference path="../src/typings/tsd.d.ts" />
-declare enum GTDTag {
-    INBOX = 0,
-    SNOOZED = 1,
-    NONE = 2,
-}
-declare enum ValueTag {
-    IMPORTANT = 0,
-    UNIMPORTANT = 1,
-    NONE = 2,
-}
-interface BuildupItem {
-    buildup_title: string;
-    buildup_GTDTag?: GTDTag;
-    buildup_valueTag?: ValueTag;
+declare enum Type {
+    FOLDER = 0,
+    DOCUMENT = 1,
 }
 interface FolderData {
     folder?: Folder;
     parentFolders?: Folder[];
-    isFavorite?: boolean;
 }
 interface Folder {
     name: string;
     encryptedId: string;
     parentFolderId?: string;
-    isFavorite?: boolean;
+    children?: Doc[];
 }
-interface Doc extends BuildupItem {
+interface Doc {
     folderData?: FolderData;
     title: string;
     url: string;
     localPadId: string;
     isFavorite: boolean;
-    buildup_isCurrent: boolean;
 }
-interface BuildupFolder extends BuildupItem {
-    url?: string;
-    docs: Doc[];
-    isFavorite: boolean;
-}
-interface GTD {
+interface Section {
     title: string;
-    folders: BuildupFolder[];
-    docs: Doc[];
+    items: Item[];
+    disclosure: boolean;
 }
-interface Disclosure {
-    Inbox: boolean;
-    Snoozed: boolean;
-    Documents: boolean;
+interface Item {
+    title: string;
+    url: string;
+    type: Type;
+    isFavorite: boolean;
+    isUnimportant: boolean;
+    progress: number;
+    isCurrent: boolean;
+    children?: Item[];
+    gtd: GTD2;
+    depth?: number;
+    parent?: Item;
 }
-declare const DISCLOSURE_KEY: string;
-declare const DISCLOSURE_ATTR_KEY: string;
-declare const DISCLOSURE_SIGN: string;
-declare let disclosure: Disclosure;
-declare function renderSidemenu(gtds: GTD[], folders: BuildupFolder[]): void;
-declare function actionTagging(title: string, item: BuildupItem): void;
-declare function compareItems(a: BuildupItem, b: BuildupItem): number;
-declare function buildupSidemenu(): void;
+declare function drawSidemenu(sections: Section[]): void;
+declare enum GTD2 {
+    INBOX = 2,
+    SNOOZED = 1,
+    NONE = 0,
+}
+declare const DISCLOSURE_PREFIX: string;
+interface ActionTitle {
+    title: string;
+    gtd: GTD2;
+    unimportant: boolean;
+    progress: number;
+}
+declare function parseActionTitle(title: string): ActionTitle;
+declare function compareByName(a: Item, b: Item): number;
+declare function compareByValue(a: Item, b: Item): number;
+declare function getSectionData(result: (sections: Section[]) => void): void;

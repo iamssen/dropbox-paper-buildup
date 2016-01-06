@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="15px" height="14px" viewBox="0 0 15 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.4 (17249) - http://www.bohemiancoding.com/sketch -->
+    <title>document.star</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="document.star" sketch:type="MSLayerGroup" transform="translate(1.000000, 1.000000)">
+            <rect id="Rectangle-2-Copy" stroke="#C8C8C8" fill="#F6F7FA" sketch:type="MSShapeGroup" x="0" y="0" width="11" height="12"></rect>
+            <path d="M2.5125,3.5 L8.32617188,3.5" id="Line" stroke="#E7E7E7" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+            <path d="M2.5125,5.5 L8.32617188,5.5" id="Line-Copy" stroke="#E7E7E7" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+            <path d="M2.5125,7.5 L5.15507813,7.5" id="Line-Copy-2" stroke="#E7E7E7" stroke-linecap="square" sketch:type="MSShapeGroup"></path>
+            <polygon id="Star-1" fill="#7A8995" sketch:type="MSShapeGroup" points="5.5 6.88966182 3.44275162 8.33155948 4.17835308 5.92942912 2.17130219 4.41844052 4.68317728 4.37573998 5.5 2 6.31682272 4.37573998 8.82869781 4.41844052 6.82164692 5.92942912 7.55724838 8.33155948 "></polygon>
+        </g>
+    </g>
+</svg>

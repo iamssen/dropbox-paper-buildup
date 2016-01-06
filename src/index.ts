@@ -1,381 +1,366 @@
 //'use strict';
 /// <reference path="typings/tsd.d.ts"/>
 
-enum GTDTag { INBOX, SNOOZED, NONE }
-enum ValueTag { IMPORTANT, UNIMPORTANT, NONE }
-
-interface BuildupItem {
-	buildup_title: string;
-	buildup_GTDTag?: GTDTag;
-	buildup_valueTag?: ValueTag;
-}
+enum Type {FOLDER, DOCUMENT}
 
 interface FolderData {
 	folder?: Folder;
 	parentFolders?: Folder[];
-	isFavorite?: boolean;
 }
 
 interface Folder {
 	name:string;
 	encryptedId:string;
 	parentFolderId?:string;
-	isFavorite?:boolean;
+	children?: Doc[];
 }
 
-interface Doc extends BuildupItem {
+interface Doc {
 	folderData?: FolderData;
 	title: string;
 	url: string;
 	localPadId: string;
 	isFavorite: boolean;
-
-	buildup_isCurrent: boolean;
 }
 
-interface BuildupFolder extends BuildupItem {
-	url?: string;
-	docs:Doc[];
-	isFavorite:boolean;
+//----------------------------------------------------------------
+// Common
+//----------------------------------------------------------------
+interface Section {
+	title: string;
+	items: Item[];
+	disclosure: boolean;
 }
 
-interface GTD {
+interface Item {
 	title:string;
-	folders:BuildupFolder[];
-	docs:Doc[];
+	url:string;
+	type:Type;
+	isFavorite:boolean;
+	isUnimportant:boolean;
+	progress:number;
+	isCurrent:boolean;
+	children?:Item[];
+	gtd: GTD2;
+	depth?:number;
+	parent?:Item;
 }
 
-interface Disclosure {
-	Inbox:boolean;
-	Snoozed:boolean;
-	Documents:boolean;
-}
+//----------------------------------------------------------------
+// Render
+//----------------------------------------------------------------
+function drawSidemenu(sections:Section[]) {
+	const hierarchy = d3.layout.hierarchy();
 
-const DISCLOSURE_KEY:string = 'disclosure';
-const DISCLOSURE_ATTR_KEY:string = 'disclosure-id';
-const DISCLOSURE_SIGN:string = '...';
+	d3.select('.buildup-sidemenu').remove();
 
-let disclosure:Disclosure = {
-	Inbox: false,
-	Snoozed: false,
-	Documents: false
-};
-
-function renderSidemenu(gtds:GTD[], folders:BuildupFolder[]) {
-	console.log(chrome.storage.local)
-
-	let renderHeader = (selection:d3.Selection<string>) => {
-		selection
-			.classed('buildup-container-header', true)
-			.html(d => {
-				if (disclosure[d]) return `${d} <span class="buildup-container-header-disclosure-sign">${DISCLOSURE_SIGN}</span>`;
-				return d;
-			})
-			.on('click', (d, i, o) => {
-				let closed:boolean = !disclosure[d];
-				let value:Object = {};
-				disclosure[d] = closed;
-				value[DISCLOSURE_KEY] = disclosure;
-				chrome.storage.local.set(value);
-
-				d3.select(selection[o][i])
-					.html(() => {
-						if (closed) return `${d} <span class="buildup-container-header-disclosure-sign">${DISCLOSURE_SIGN}</span>`;
-						return d;
-					});
-
-				d3
-					.select(`[${DISCLOSURE_ATTR_KEY}=${d}]`)
-					.classed('buildup-container-disclosure-closed', closed);
-			});
-	};
-
-	let renderItem = (selection:d3.Selection<BuildupItem>) => {
-		selection
-			.classed('buildup-container-doc-important', (item:BuildupItem) => item.buildup_valueTag === ValueTag.IMPORTANT)
-			.classed('buildup-container-doc-unimportant', (item:BuildupItem) => item.buildup_valueTag === ValueTag.UNIMPORTANT)
-	};
-
-	let renderFolder = (selection:d3.Selection<BuildupFolder>) => {
-		selection
-			.classed('buildup-container-doc', true)
-			.call(renderItem)
-			.append('a')
-			.html((folder:BuildupFolder) => {
-				if (folder.isFavorite || folder.buildup_valueTag === ValueTag.IMPORTANT) return `<span class="buildup-container-doc-favorited">★</span> ${folder.buildup_title}`;
-				return `<span class="buildup-container-doc-unfavorited">☆</span> ${folder.buildup_title}`;
-			})
-			.attr('href', (folder:BuildupFolder) => folder.url);
-	};
-
-	let renderDoc = (selection:d3.Selection<Doc>) => {
-		selection
-		//.attr('pad-id', (doc:Doc) => doc.localPadId)
-			.classed('buildup-container-doc', true)
-			.classed('buildup-container-doc-selected', (doc:Doc) => doc.buildup_isCurrent)
-			.call(renderItem)
-			.append('a')
-			.html((doc:Doc) => {
-				if (doc.isFavorite || doc.buildup_valueTag === ValueTag.IMPORTANT) return `<span class="buildup-container-doc-favorited">★</span> ${doc.buildup_title}`;
-				return `<span class="buildup-container-doc-unfavorited">☆</span> ${doc.buildup_title}`;
-			})
-			.attr('href', (doc:Doc) => doc.url);
-	};
-
-	d3.select('.buildup-container').remove();
-
-	let buildupContainer = d3.select('.hp-sidebar-scroller')
-		//.append('div')
+	const container = d3.select('.hp-sidebar-scroller')
 		.insert('div', ':first-child')
-		.classed('buildup-container', true);
+		.attr('class', 'buildup-sidemenu')
 
-	gtds.forEach(gtd => {
-		buildupContainer
-			.append('h4')
-			.datum(gtd.title)
-			.call(renderHeader);
-
-		let ul = buildupContainer
-			.append('ul')
-			.attr(DISCLOSURE_ATTR_KEY, gtd.title)
-			.classed('buildup-container-disclosure-closed', disclosure[gtd.title])
-			.classed('buildup-container-docs', true);
-
-		if (gtd.folders.length > 0) {
-			gtd.folders.forEach((folder:BuildupFolder) => {
-				ul
-					.append('li')
-					.datum(folder)
-					.call(renderFolder);
-			});
-		}
-
-		if (gtd.docs.length > 0) {
-			gtd.docs.forEach((doc:Doc) => {
-				ul
-					.append('li')
-					.datum(doc)
-					.call(renderDoc);
-			});
-		}
-	});
-
-	buildupContainer
-		.append('h4')
-		.datum('Documents')
-		.call(renderHeader);
-
-	buildupContainer
-		.append('ul')
-		.attr(DISCLOSURE_ATTR_KEY, 'Documents')
-		.classed('buildup-container-disclosure-closed', disclosure.Documents)
-		.classed('buildup-container-folders', true)
-		.selectAll('li')
-		.data(folders)
+	const section = container
+		.selectAll('div')
+		.data(sections)
 		.enter()
-		.append('li')
-		.classed('buildup-container-folder', true)
-		.classed('buildup-container-folder-important', (folder:BuildupFolder) => folder.buildup_valueTag === ValueTag.IMPORTANT)
-		.classed('buildup-container-folder-unimportant', (folder:BuildupFolder) => folder.buildup_valueTag === ValueTag.UNIMPORTANT)
-		.html((folder:BuildupFolder) => {
-			if (folder.url) return `<h5><a href="${folder.url}">${folder.buildup_title}</a></h5>`;
-			return `<h5>${folder.buildup_title}</h5>`;
+		.append('div')
+		.attr('class', 'section')
+
+	section
+		.append('h1')
+		.html((section:Section) => `${section.title} <img src="${chrome.extension.getURL('static/section.close.svg')}"/>`)
+		.attr('section-id', (section:Section) => section.title)
+		.classed('section-hide', (section:Section) => !section.disclosure)
+		.classed('section-title', true)
+		.on('click', function (section:Section) {
+			let h1 = d3.select(this);
+			let ul = d3.select(`ul[section-id='${section.title}']`);
+
+			let disclosure:boolean = h1.classed('section-hide');
+
+			h1.classed('section-hide', !disclosure);
+			ul.classed('section-hide', !disclosure);
+
+			let value:{[key:string]:boolean} = {};
+			value[DISCLOSURE_PREFIX + section.title] = disclosure;
+			chrome.storage.local.set(value);
 		})
+
+	const li = section
 		.append('ul')
-		.classed('buildup-container-docs', true)
+		.attr('section-id', (section:Section) => section.title)
+		.classed('section-hide', (section:Section) => !section.disclosure)
 		.selectAll('li')
-		.data((folder:BuildupFolder) => folder.docs)
+		.data((section:Section) => hierarchy({children: section.items}).slice(1))
 		.enter()
 		.append('li')
-		.call(renderDoc)
 
-	//.on('contextmenu', (doc:Doc, i:number, o:number) => {
-	//	console.log('!!! contextmenu', doc, i, o);
-	//	(d3.event as Event).preventDefault();
-	//	(d3.event as Event).stopPropagation();
-	//	(d3.event as Event).stopImmediatePropagation();
-	//
-	//	buildupMoveToFolder(doc, i, o, (d3.event as Event).target);
-	//})
+	li
+		.filter((item:Item) => item.type === Type.FOLDER && item.children && item.children.length > 0)
+		.attr('class', (item:Item) => {
+			let classes:string[] = ['item-group'];
+			if (item.isUnimportant) classes.push('item-unimportant');
+			return classes.join(' ');
+		})
+		.html((item:Item) => {
+			return `<a href="${item.url}">${item.title}</a>`
+		})
+
+	li
+		.filter((item:Item) => item.type === Type.DOCUMENT || (item.type === Type.FOLDER && !item.children))
+		.attr('class', (item:Item) => {
+			let classes:string[] = ['item'];
+			if (item.isCurrent) classes.push('item-current');
+			if (item.isFavorite) classes.push('item-favorite');
+			if (item.isUnimportant || (item.parent && item.parent.isUnimportant)) classes.push('item-unimportant');
+			return classes.join(' ');
+		})
+		.html((item:Item) => {
+			let icon:string = (item.type === Type.DOCUMENT) ? 'document' : 'folder';
+			if (item.isFavorite) icon += '.star';
+			return `
+				<img src="${chrome.extension.getURL('static/' + icon + '.svg')}"/>
+				<a href="${item.url}">${item.title}</a>
+			`;
+		})
+
+	const innerArc = d3.svg.arc()
+		.innerRadius(0)
+		.outerRadius(3)
+		.startAngle(0)
+		.endAngle(d => Math.PI * 2 * d['progress'])
+
+	const svg = li
+		.filter((item:Item) => !isNaN(item.progress))
+		.append('svg')
+		.attr({width: 10, height: 10})
+		.append('g')
+		.attr('transform', 'translate(5, 5)')
+
+	svg
+		.append('circle')
+		.attr('r', 4)
+
+	svg
+		.append('path')
+		.attr('d', innerArc)
+		.each((item:Item) => console.log('progress', item.title, item.progress))
+
 }
 
-function actionTagging(title:string, item:BuildupItem) {
-	const TEST_TAG:RegExp[] = [
+//----------------------------------------------------------------
+// Data
+//----------------------------------------------------------------
+enum GTD2 {INBOX = 2, SNOOZED = 1, NONE = 0}
+
+const DISCLOSURE_PREFIX:string = 'disclosure_';
+
+interface ActionTitle {
+	title:string;
+	gtd:GTD2;
+	unimportant:boolean;
+	progress:number;
+}
+
+function parseActionTitle(title:string):ActionTitle {
+	const TAGS:RegExp[] = [
 		/(#inbox|#i)/,
 		/(#snoozed|#s)/,
-		/(#\+1)/,
-		/(#\-1)/
+		/(#\-1)/,
+		/(#[0-9]+%)/
 	];
 
-	let checked:boolean[] = TEST_TAG.map<boolean>((test:RegExp) => {
-		if (test.test(title)) {
-			title = title.replace(test, '');
-			return true;
-		}
-		return false;
+	const values:string[] = TAGS.map((test:RegExp) => {
+		if (test.test(title)) return test.exec(title)[0];
+		return null;
 	});
 
-	if (checked[0]) {
-		item.buildup_GTDTag = GTDTag.INBOX;
-	} else if (checked[1]) {
-		item.buildup_GTDTag = GTDTag.SNOOZED;
-	} else {
-		item.buildup_GTDTag = GTDTag.NONE;
-	}
+	TAGS.forEach((test) => title = title.replace(test, ''));
+	title = title.replace(/^\s+|\s+$/gi, '');
 
-	if (checked[2]) {
-		item.buildup_valueTag = ValueTag.IMPORTANT;
-	} else if (checked[3]) {
-		item.buildup_valueTag = ValueTag.UNIMPORTANT;
-	} else {
-		item.buildup_valueTag = ValueTag.NONE;
-	}
+	const p:string = values[3];
 
-	item.buildup_title = title;
+	const gtd:GTD2 = (values[0]) ? GTD2.INBOX : (values[1]) ? GTD2.SNOOZED : GTD2.NONE;
+	const unimportant:boolean = values[2] !== null;
+	const progress:number = (p) ? Number(p.substring(1, p.length - 1)) / 100 : NaN;
+
+	return {title, gtd, unimportant, progress};
 }
 
-function compareItems(a:BuildupItem, b:BuildupItem):number {
-	if (a.buildup_valueTag === b.buildup_valueTag) {
-		return a.buildup_title > b.buildup_title ? 1 : -1;
-	} else if (a.buildup_valueTag === ValueTag.IMPORTANT || b.buildup_valueTag === ValueTag.UNIMPORTANT) {
+function compareByName(a:Item, b:Item):number {
+	if ((a.isFavorite === b.isFavorite) && (a.isUnimportant === b.isUnimportant)) {
+		return a.title > b.title ? 1 : -1;
+	} else if (a.isFavorite || b.isUnimportant) {
 		return -1;
-	} else if (a.buildup_valueTag === ValueTag.UNIMPORTANT || b.buildup_valueTag === ValueTag.IMPORTANT) {
+	} else if (a.isUnimportant || b.isFavorite) {
 		return 1;
 	}
-	return a.buildup_title > b.buildup_title ? 1 : -1;
+	return a.title > b.title ? 1 : -1;
 }
 
-function buildupSidemenu() {
-	$.get('/folder/list', (folders:{data:{folder:Folder}[]}) => {
-		let deferreds:any[] = [
-			$.get('/ep/internal/padlist/?filter=2')
-		];
+function compareByValue(a:Item, b:Item):number {
+	if ((a.gtd === b.gtd) && (a.isFavorite === b.isFavorite) && (a.isUnimportant === b.isUnimportant)) {
+		return a.title > b.title ? 1 : -1;
+	} else if (a.isFavorite || b.isUnimportant || a.gtd > b.gtd) {
+		return -1;
+	} else if (a.isUnimportant || b.isFavorite || a.gtd < b.gtd) {
+		return 1;
+	}
+	return a.title > b.title ? 1 : -1;
+}
+
+function getSectionData(result:(sections:Section[]) => void) {
+	$.get('/folder/list', (folders:{data:{folder:Folder, inSidebar:boolean}[]}) => {
+		let favoriteFolders:string[] = [];
+		let requests:JQueryXHR[] = [$.get('/ep/internal/padlist/?filter=2')];
 
 		folders.data.forEach(data => {
-			deferreds.push($.get(`/ep/internal/padlist/?q=&folderId=${data.folder.encryptedId}`));
+			if (data.inSidebar) favoriteFolders.push(data.folder.encryptedId);
+			requests.push($.get(`/ep/internal/padlist/?q=&folderId=${data.folder.encryptedId}`));
 		});
 
-		$.when(...deferreds).done((...docsList) => {
-			let location:string = window.location.href;
+		$.when(...requests).done((...docsList) => {
+			const location:string = window.location.href;
 
-			// collect docs
-			let inboxDocs:Doc[] = [];
-			let snoozedDocs:Doc[] = [];
-			let docs:Doc[] = [];
 			let exists:{[padId:string]:boolean} = {};
+			let items:{
+				inbox: Item[],
+				snoozed: Item[],
+				favorited: Item[],
+				unimportants: Item[],
+				uncategorized: Item[],
+				folders: Item[],
+				documents: Item[]} = {
+				inbox: [],
+				snoozed: [],
+				favorited: [],
+				unimportants: [],
+				uncategorized: [],
+				folders: [],
+				documents: []
+			};
+			let categorized:{[folder:string]: Item[]} = {};
+			let folderInfo:{[folderName:string]:Folder} = {};
 
 			docsList.forEach(item => {
-				let pads:Doc[] = item[0]['pads'];
-				if (!pads || pads.length == 0) return;
+				const pads:Doc[] = item[0]['pads'];
+				if (!pads || pads.length === 0) return;
 
 				pads.forEach((doc:Doc) => {
 					if (exists[doc.localPadId]) return;
-
-					doc.buildup_isCurrent = location.indexOf(doc.localPadId) > -1;
-
-					docs.push(doc);
 					exists[doc.localPadId] = true;
 
-					actionTagging(doc.title, doc);
+					const actionTitle:ActionTitle = parseActionTitle(doc.title);
 
-					switch (doc.buildup_GTDTag) {
-						case GTDTag.INBOX:
-							inboxDocs.push(doc);
+					const item:Item = {
+						title: actionTitle.title,
+						url: doc.url,
+						type: Type.DOCUMENT,
+						isFavorite: doc.isFavorite,
+						isUnimportant: actionTitle.unimportant,
+						progress: actionTitle.progress,
+						isCurrent: location.indexOf(doc.localPadId) > -1,
+						gtd: actionTitle.gtd
+					};
+
+					switch (actionTitle.gtd) {
+						case GTD2.INBOX:
+							items.inbox.push(item);
 							break;
-						case GTDTag.SNOOZED:
-							snoozedDocs.push(doc);
+						case GTD2.SNOOZED:
+							items.snoozed.push(item);
 							break;
+					}
+
+					if (item.isFavorite) items.favorited.push(item);
+					if (item.isUnimportant) items.unimportants.push(item);
+
+					if (doc.folderData && doc.folderData.folder) {
+						const folderName:string = doc.folderData.folder.name;
+						if (!categorized[folderName]) {
+							folderInfo[folderName] = doc.folderData.folder;
+							categorized[folderName] = [];
+						}
+						categorized[folderName].push(item);
+					} else {
+						items.uncategorized.push(item);
 					}
 				});
 			});
-
-			// categorize docs
-			let inboxFolders:BuildupFolder[] = [];
-			let snoozedFolders:BuildupFolder[] = [];
-			let categorized:{[folder:string]:Doc[]} = {};
-			let uncategorized:Doc[] = [];
-			let folderInfo:{[folder:string]:Folder} = {};
-
-			docs.forEach((doc:Doc) => {
-				if (doc.folderData && doc.folderData.folder) {
-					let folderName:string = doc.folderData.folder.name;
-					if (!categorized[folderName]) {
-						let folder:Folder = doc.folderData.folder;
-						folder.isFavorite = doc.folderData.isFavorite;
-						folderInfo[folderName] = folder;
-						categorized[folderName] = [];
-					}
-					categorized[folderName].push(doc);
-				} else {
-					uncategorized.push(doc);
-				}
-			});
-
-			let folders:BuildupFolder[] = [];
 
 			for (let folderName in categorized) {
 				if (categorized.hasOwnProperty(folderName)) {
-					let folder:BuildupFolder = {
-						buildup_title: folderName,
-						url: `/folder/show/${folderInfo[folderName].encryptedId}`,
-						docs: categorized[folderName],
-						isFavorite: folderInfo[folderName].isFavorite
+					const actionTitle:ActionTitle = parseActionTitle(folderName);
+					const folder:Folder = folderInfo[folderName];
+
+					let item:Item = {
+						title: actionTitle.title,
+						url: `/folder/show/${folder.encryptedId}`,
+						type: Type.FOLDER,
+						isFavorite: favoriteFolders.indexOf(folder.encryptedId) > -1,
+						isUnimportant: actionTitle.unimportant,
+						progress: actionTitle.progress,
+						isCurrent: false,
+						gtd: actionTitle.gtd,
+						children: categorized[folderName]
 					};
 
-					folders.push(folder);
+					items.documents.push(item);
 
-					actionTagging(folderName, folder);
+					item = {
+						title: actionTitle.title,
+						url: `/folder/show/${folder.encryptedId}`,
+						type: Type.FOLDER,
+						isFavorite: favoriteFolders.indexOf(folder.encryptedId) > -1,
+						isUnimportant: actionTitle.unimportant,
+						progress: actionTitle.progress,
+						isCurrent: false,
+						gtd: actionTitle.gtd
+					};
 
-					switch (folder.buildup_GTDTag) {
-						case GTDTag.INBOX:
-							inboxFolders.push(folder);
+					switch (actionTitle.gtd) {
+						case GTD2.INBOX:
+							items.inbox.push(item);
 							break;
-						case GTDTag.SNOOZED:
-							snoozedFolders.push(folder);
+						case GTD2.SNOOZED:
+							items.snoozed.push(item);
 							break;
 					}
+
+					if (item.isFavorite) items.favorited.push(item);
+					if (item.isUnimportant) items.unimportants.push(item);
+
+					items.folders.push(item);
 				}
 			}
 
-			// sort folders and docs
-			inboxDocs = inboxDocs.sort(compareItems);
-			snoozedDocs = snoozedDocs.sort(compareItems);
-			inboxFolders = inboxFolders.sort(compareItems);
-			snoozedFolders = snoozedFolders.sort(compareItems);
-
-			folders = folders.sort(compareItems);
-			folders.forEach(folder => folder.docs = folder.docs.sort(compareItems));
-			uncategorized = uncategorized.sort(compareItems);
-
-			// generate render data
-			let gtds:GTD[] = [];
-
-			if (inboxFolders.length > 0 || inboxDocs.length > 0) {
-				gtds.push({
-					title: 'Inbox',
-					folders: inboxFolders,
-					docs: inboxDocs
-				});
-			}
-
-			if (snoozedFolders.length > 0 || snoozedDocs.length > 0) {
-				gtds.push({
-					title: 'Snoozed',
-					folders: snoozedFolders,
-					docs: snoozedDocs
-				})
-			}
-
-			folders.push({
-				buildup_title: 'Uncategorized',
-				docs: uncategorized,
-				buildup_GTDTag: GTDTag.NONE,
-				buildup_valueTag: ValueTag.NONE,
-				isFavorite: false
+			items.inbox = items.inbox.sort(compareByName);
+			items.snoozed = items.snoozed.sort(compareByName);
+			items.favorited = items.favorited.sort(compareByName);
+			items.unimportants = items.unimportants.sort(compareByName);
+			items.folders = items.folders.sort(compareByValue);
+			items.uncategorized = items.uncategorized.sort(compareByValue);
+			items.documents = items.documents.sort(compareByValue);
+			items.documents.forEach((folder:Item) => folder.children = folder.children.sort(compareByValue));
+			items.documents.push({
+				title: 'Uncategorized',
+				url: '/docs',
+				type: Type.FOLDER,
+				isFavorite: false,
+				isUnimportant: false,
+				progress: -1,
+				isCurrent: false,
+				gtd: GTD2.NONE,
+				children: items.uncategorized
 			});
 
-			// render
-			renderSidemenu(gtds, folders);
+			result([
+				{title: 'Inbox', items: items.inbox, disclosure: true},
+				{title: 'Snoozed', items: items.snoozed, disclosure: false},
+				{title: 'Favorited', items: items.favorited, disclosure: false},
+				{title: 'Folders', items: items.folders, disclosure: false},
+				{title: 'Documents', items: items.documents, disclosure: true},
+				{title: 'Unimportants', items: items.unimportants, disclosure: false}
+			]);
 		});
 	});
 }
@@ -396,17 +381,27 @@ $(document).ready(() => {
 			});
 	});
 
-	chrome.storage.local.get(DISCLOSURE_KEY, (value) => {
-		if (value[DISCLOSURE_KEY]) {
-			disclosure = value[DISCLOSURE_KEY];
-		} else {
-			let value:Object = {};
-			value[DISCLOSURE_KEY] = disclosure;
-			chrome.storage.local.set(value);
-		}
-		buildupSidemenu();
-	});
+	getSectionData((sections:Section[]) => {
+		const keys:string[] = sections.map(section => DISCLOSURE_PREFIX + section.title);
+		chrome.storage.local.get(keys, (result) => {
+			let f:number = keys.length;
+			let init:{[key:string]:boolean} = {};
+			let doInit:boolean = false;
+			while (--f >= 0) {
+				const key:string = keys[f];
+				if (result[key] === undefined) {
+					init[key] = sections[f].disclosure;
+					doInit = true;
+				} else {
+					sections[f].disclosure = result[key];
+				}
+			}
 
+			if (doInit) chrome.storage.local.set(init);
+
+			drawSidemenu(sections);
+		});
+	});
 
 	// TODO Refresh list - find api to detect location change
 	//window.onpopstate = function (event) {

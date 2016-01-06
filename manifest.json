@@ -22,8 +22,9 @@
     "*://paper.dropbox.com/"
   ],
   "update_url"               : "https://clients2.google.com/service/update2/crx",
-  "version"                  : "0.2.0",
+  "version"                  : "0.3.0",
   "web_accessible_resources" : [
-    "dist/index.css"
+    "dist/index.css",
+    "static/*.svg"
   ]
 }

@@ -1,55 +1,67 @@
-.buildup-container {
+div.buildup-sidemenu {
   box-sizing: border-box;
-  margin: 0 40px 24px 40px; }
-  .buildup-container h4.buildup-container-header {
-    font-size: 15px;
-    font-weight: 400;
-    margin-top: 16px;
-    margin-bottom: 11px;
-    cursor: pointer; }
-    .buildup-container h4.buildup-container-header:first-child {
-      margin-top: 0; }
-    .buildup-container h4.buildup-container-header span.buildup-container-header-disclosure-sign {
-      color: #999999; }
-  .buildup-container .buildup-container-disclosure-closed {
-    display: none; }
-  .buildup-container ul.buildup-container-docs li.buildup-container-doc {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 300;
-    font-size: 12px;
-    margin-bottom: 4px; }
-    .buildup-container ul.buildup-container-docs li.buildup-container-doc a {
-      color: #7b8994; }
-      .buildup-container ul.buildup-container-docs li.buildup-container-doc a:hover {
-        color: #0070cc; }
-      .buildup-container ul.buildup-container-docs li.buildup-container-doc a span.buildup-container-doc-unfavorited {
-        opacity: 0.16; }
-  .buildup-container ul.buildup-container-docs li.buildup-container-doc-important {
-    font-weight: 500; }
-    .buildup-container ul.buildup-container-docs li.buildup-container-doc-important a {
-      color: #1425a5; }
-  .buildup-container ul.buildup-container-docs li.buildup-container-doc-unimportant {
-    opacity: 0.3; }
-  .buildup-container ul.buildup-container-docs li.buildup-container-doc-selected {
-    font-weight: 600; }
-    .buildup-container ul.buildup-container-docs li.buildup-container-doc-selected a {
-      color: #363daf; }
-  .buildup-container ul.buildup-container-folders li.buildup-container-folder {
-    margin-bottom: 10px; }
-    .buildup-container ul.buildup-container-folders li.buildup-container-folder h5 {
-      font-size: 13px;
+  margin: 0 18px 24px 40px; }
+  div.buildup-sidemenu div.section {
+    margin-bottom: 14px; }
+    div.buildup-sidemenu div.section:last-child {
+      margin-bottom: 0; }
+    div.buildup-sidemenu div.section h1.section-title {
+      font-size: 15px;
       font-weight: 400;
-      margin-bottom: 6px; }
-      .buildup-container ul.buildup-container-folders li.buildup-container-folder h5 a {
-        color: #68747d; }
-        .buildup-container ul.buildup-container-folders li.buildup-container-folder h5 a:hover {
-          color: #0070cc; }
-  .buildup-container ul.buildup-container-folders li.buildup-container-folder-important h5 a {
-    color: #1425a5; }
-  .buildup-container ul.buildup-container-folders li.buildup-container-folder-unimportant h5 {
-    opacity: 0.3; }
+      color: #49535E;
+      cursor: pointer;
+      margin-top: 16px;
+      margin-bottom: 9px; }
+      div.buildup-sidemenu div.section h1.section-title:first-child {
+        margin-top: 0; }
+      div.buildup-sidemenu div.section h1.section-title img {
+        display: none; }
+      div.buildup-sidemenu div.section h1.section-title.section-hide img {
+        display: inline; }
+    div.buildup-sidemenu div.section ul.section-hide {
+      display: none; }
+    div.buildup-sidemenu div.section ul li {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+      div.buildup-sidemenu div.section ul li a {
+        display: inline-block;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        color: #7A8995; }
+        div.buildup-sidemenu div.section ul li a:hover, div.buildup-sidemenu div.section ul li a:active {
+          color: #000000; }
+      div.buildup-sidemenu div.section ul li svg {
+        display: inline; }
+        div.buildup-sidemenu div.section ul li svg circle {
+          fill: #E2E8EE;
+          stroke: #D6DDE4;
+          stroke-width: 2px; }
+        div.buildup-sidemenu div.section ul li svg path {
+          fill: #ffffff; }
+      div.buildup-sidemenu div.section ul li:first-child {
+        margin-top: 0; }
+      div.buildup-sidemenu div.section ul li.item-group {
+        font-size: 13px;
+        font-weight: 400;
+        margin-top: 5px;
+        margin-bottom: 7px; }
+        div.buildup-sidemenu div.section ul li.item-group a {
+          width: 231px; }
+        div.buildup-sidemenu div.section ul li.item-group svg {
+          vertical-align: 4px; }
+      div.buildup-sidemenu div.section ul li.item {
+        font-size: 12px;
+        font-weight: 300;
+        height: 20px;
+        margin-bottom: 2px; }
+        div.buildup-sidemenu div.section ul li.item a {
+          width: 210px;
+          vertical-align: -3px; }
+      div.buildup-sidemenu div.section ul li.item-unimportant {
+        opacity: 0.3; }
+      div.buildup-sidemenu div.section ul li.item-current {
+        color: #007ee5; }
 
 .hp-doclist-entry-activity-info {
   display: none; }
