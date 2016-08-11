@@ -1,30 +1,44 @@
 {
-  "content_scripts"          : [
+  "content_scripts" : [
     {
       "all_frames" : true,
-      "js"         : [
-        "dist/jquery.js",
-        "dist/d3.js",
-        "dist/index.js"
+      "js" : [
+        "dist/main.bundle.js"
       ],
-      "matches"    : [
+      "matches" : [
         "*://paper.dropbox.com/*"
       ],
-      "run_at"     : "document_start"
+      "run_at" : "document_start"
     }
   ],
-  "description"              : "Dropbox Paper Buildup",
-  "manifest_version"         : 2,
-  "name"                     : "Dropbox Paper Buildup",
-  "permissions"              : [
-    "tabs",
+  "description" : "Dropbox Paper Buildup",
+  "manifest_version" : 2,
+  "name" : "Dropbox Paper Buildup",
+  "permissions" : [
     "storage",
     "*://paper.dropbox.com/"
   ],
-  "update_url"               : "https://clients2.google.com/service/update2/crx",
-  "version"                  : "0.3.2",
+  "options_page" : "dist/options.html",
+  "update_url" : "https://clients2.google.com/service/update2/crx",
+  "version" : "0.4.0",
   "web_accessible_resources" : [
-    "dist/index.css",
-    "static/*.svg"
-  ]
+    "dist/style.css",
+    "dist/static/*.svg"
+  ],
+  "icons" : {
+    "16" : "icons/icon.png",
+    "48" : "icons/icon.png",
+    "128" : "icons/icon.png"
+  },
+  "browser_action" : {
+    "default_icon" : {
+      "19" : "icons/icon.png",
+      "38" : "icons/icon.png"
+    }
+  },
+  "background" : {
+    "scripts" : [
+      "dist/background.bundle.js"
+    ]
+  }
 }

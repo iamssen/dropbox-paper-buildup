@@ -1,18 +1,68 @@
 {
-  "name"            : "dropbox-paper-buildup",
-  "license"         : "MIT",
-  "repository"      : {
-    "type" : "git",
-    "url"  : "git://github.com/iamssen/dropbox-paper-buildup.git"
+  "name": "dropbox-paper-buildup",
+  "version": "0.4.0",
+  "description": "Buildup Dropbox Paper",
+  "scripts": {
+    "build": "webpack --inline --colors --progress --display-error-details --display-cached",
+    "watch": "npm run build -- --watch",
+    "start": "npm run watch"
   },
-  "scripts"         : {
-    "build"   : "gulp build",
-    "release" : "gulp build && gulp release"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^2.0.0",
+    "ts-loader": "^0.8.2",
+    "webpack": "^1.12.9",
+    "webpack-merge": "^0.14.1",
+    "copy-webpack-plugin": "^3.0.1",
+    "json-loader": "^0.5.4",
+    "raw-loader": "^0.5.1",
+    "source-map-loader": "^0.1.5",
+    "to-string-loader": "^1.1.4",
+    "less-loader": "^2.2.3",
+    "css-loader": "^0.23.1",
+    "postcss-loader": "^0.9.1",
+    "autoprefixer": "^6.3.6",
+    "precss": "^1.4.0",
+    "less": "^2.7.1",
+    "glob": "^7.0.5"
   },
-  "devDependencies" : {
-    "gulp"       : "*",
-    "gulp-clean" : "*",
-    "gulp-sass"  : "*",
-    "gulp-tsc"   : "*"
-  }
+  "dependencies": {
+    "@types/chrome": "0.0.30",
+    "@types/jquery": "^1.10.29",
+    "@types/material-ui": "^0.15.31",
+    "@types/react": "^0.14.29",
+    "@types/react-dom": "^0.14.14",
+    "@types/react-redux": "^4.4.29",
+    "@types/redux": "^3.5.27",
+    "@types/redux-thunk": "^2.1.28",
+    "@types/whatwg-fetch": "0.0.28",
+    "d3-array": "^1.0.0",
+    "d3-axis": "^1.0.1",
+    "d3-color": "^1.0.0",
+    "d3-ease": "^1.0.0",
+    "d3-hierarchy": "^1.0.1",
+    "d3-interpolate": "^1.1.0",
+    "d3-path": "^1.0.0",
+    "d3-polygon": "^1.0.0",
+    "d3-scale": "^1.0.2",
+    "d3-selection": "^1.0.1",
+    "d3-shape": "^1.0.1",
+    "d3-transition": "^1.0.0",
+    "jquery": "^2.2.4",
+    "material-ui": "^0.15.4",
+    "react": "^15.3.0",
+    "react-dom": "^15.3.0",
+    "react-redux": "^4.4.5",
+    "redux": "^3.5.2",
+    "redux-thunk": "^2.1.0",
+    "types.d3": "^0.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iamssen/dropbox-paper-buildup.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iamssen/dropbox-paper-buildup/issues"
+  },
+  "homepage": "https://github.com/iamssen/dropbox-paper-buildup"
 }
